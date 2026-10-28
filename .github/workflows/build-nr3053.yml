@@ -75,7 +75,26 @@ jobs:
 
       - name: Build NR3053 firmware
         working-directory: openwrt
-        run: bash scripts/build-viettel.sh defconfig/viettel-only.config
+        shell: bash
+        run: |
+          set +e
+          bash scripts/build-viettel.sh defconfig/viettel-only.config 2>&1 | tee build.log
+          rc=${PIPESTATUS[0]}
+          grep -Ein -B 4 -A 8 'error:|fatal error:|No space left|undefined reference|Error [0-9]|make\[[0-9]+\]: \*\*\*|FAILED|failed' build.log > build-errors.log || true
+          echo "Build exit code: $rc"
+          tail -n 250 build.log
+          exit "$rc"
+
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wiflow-nr3053-build-logs
+          path: |
+            openwrt/build.log
+            openwrt/build-errors.log
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Verify NR3053 sysupgrade image
         working-directory: openwrt
