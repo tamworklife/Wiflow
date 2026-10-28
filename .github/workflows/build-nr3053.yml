@@ -1,0 +1,98 @@
+name: Build WiFlow NR3053 firmware
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "package/**"
+      - "tools/**"
+      - ".github/workflows/build-nr3053.yml"
+      - "docs/IMPLEMENTATION_STATUS.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wiflow-nr3053-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Checkout WiFlow customizations
+        uses: actions/checkout@v4
+        with:
+          path: wiflow
+
+      - name: Checkout NR3053-capable OpenWrt source
+        uses: actions/checkout@v4
+        with:
+          repository: manhhaikd-dell/immortalwrt-mt798x-rebase
+          ref: main
+          path: openwrt
+
+      - name: Add WiFlow LuCI style package
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p openwrt/package/wiflow
+          cp -a wiflow/package/wiflow-luci-style openwrt/package/wiflow/
+          if [[ -f wiflow/assets/favicon-512.png ]]; then
+            mkdir -p openwrt/assets
+            cp wiflow/assets/favicon-512.png openwrt/assets/favicon-512.png
+          fi
+          grep -q '^CONFIG_PACKAGE_wiflow-luci-style=y$' openwrt/defconfig/viettel-only.config || \
+            echo 'CONFIG_PACKAGE_wiflow-luci-style=y' >> openwrt/defconfig/viettel-only.config
+
+      - name: Maximize available disk
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - name: Install build dependencies
+        working-directory: openwrt
+        run: bash scripts/install-deps.sh
+
+      - name: Restore toolchain cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            openwrt/staging_dir/host
+            openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-*
+          key: wiflow-filogic-toolchain-${{ hashFiles('openwrt/feeds.conf.default') }}-${{ hashFiles('openwrt/defconfig/viettel-only.config') }}
+          restore-keys: |
+            wiflow-filogic-toolchain-
+
+      - name: Restore source download cache
+        uses: actions/cache@v4
+        with:
+          path: openwrt/dl
+          key: wiflow-filogic-dl-${{ hashFiles('openwrt/feeds.conf.default') }}-${{ github.run_id }}
+          restore-keys: |
+            wiflow-filogic-dl-${{ hashFiles('openwrt/feeds.conf.default') }}-
+
+      - name: Build NR3053 firmware
+        working-directory: openwrt
+        run: bash scripts/build-viettel.sh defconfig/viettel-only.config
+
+      - name: Verify NR3053 sysupgrade image
+        working-directory: openwrt
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE=$(find dist -maxdepth 1 -type f -name '*viettel_nr3053*squashfs-sysupgrade.itb' -print -quit)
+          test -n "$IMAGE"
+          test -s "$IMAGE"
+          sha256sum "$IMAGE" | tee dist/wiflow-nr3053-sha256.txt
+          file "$IMAGE" | tee dist/wiflow-nr3053-file.txt
+          ls -lh "$IMAGE"
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wiflow-nr3053-firmware
+          path: openwrt/dist/
+          if-no-files-found: error
+          retention-days: 30
