@@ -1,0 +1,16 @@
+#!/bin/sh
+# Add WiFlow CSS to existing LuCI templates without replacing their logic.
+CSS='/luci-static/resources/wiflow.css'
+for f in \
+  /usr/lib/lua/luci/view/themes/*/header.htm \
+  /usr/share/ucode/luci/template/themes/*/header.ut \
+  /usr/share/ucode/luci/template/themes/*/header.htm
+do
+  [ -f "$f" ] || continue
+  grep -Fq "$CSS" "$f" && continue
+  grep -q '</head>' "$f" || continue
+  cp -p "$f" "$f.wiflow-original"
+  sed "s#</head>#<link rel=\"stylesheet\" href=\"$CSS\" />\\n</head>#" "$f.wiflow-original" > "$f"
+done
+rm -f /tmp/luci-indexcache* /tmp/luci-modulecache/* 2>/dev/null || true
+exit 0
