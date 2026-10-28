@@ -1,0 +1,24 @@
+/* WiFlow visual layer. Presentation only; existing LuCI handlers and forms remain in place. */
+:root{--wf-blue:#0758e8;--wf-cyan:#10c8e8;--wf-ink:#172033;--wf-muted:#6f7787;--wf-bg:#f2f4f9;--wf-line:#e5e8f0;--wf-soft:#e9f1ff;--wf-radius:18px;--wf-shadow:0 8px 28px rgba(29,47,84,.06)}
+html{background:var(--wf-bg)}body{color:var(--wf-ink)}
+#maincontent,#maincontent>.container,.main,.container{min-width:0}
+#maincontent .cbi-map,#maincontent .cbi-section,#maincontent .alert-message,#maincontent .well,#maincontent .panel,#maincontent .modal-content{border-radius:var(--wf-radius)}
+#maincontent .cbi-map,#maincontent .cbi-section,#maincontent .well,#maincontent .panel,#maincontent .modal-content{background:#fff;border:1px solid rgba(229,232,240,.9);box-shadow:var(--wf-shadow)}
+#maincontent .cbi-map,#maincontent .cbi-section{padding:clamp(14px,2vw,24px)}
+#maincontent h1,#maincontent h2,#maincontent h3{color:var(--wf-ink);letter-spacing:-.02em}
+#maincontent .cbi-section h3,#maincontent .panel-title{font-weight:700}
+#maincontent .cbi-button,#maincontent button,#maincontent input[type=submit],#maincontent .btn,.modal-footer .btn{border-radius:12px;min-height:38px;transition:background-color .15s ease,box-shadow .15s ease,transform .15s ease}
+#maincontent .cbi-button-action,#maincontent .btn-primary,#maincontent input[type=submit]{background:var(--wf-blue);border-color:var(--wf-blue);color:#fff;font-weight:650}
+#maincontent .cbi-button-action:hover,#maincontent .btn-primary:hover,#maincontent input[type=submit]:hover{filter:brightness(1.04);box-shadow:0 5px 16px #0758e822}
+#maincontent input:not([type=checkbox]):not([type=radio]):not([type=submit]),#maincontent select,#maincontent textarea{max-width:100%;min-width:0;border-radius:11px;border-color:#d9deea}
+#maincontent input:focus,#maincontent select:focus,#maincontent textarea:focus,#maincontent button:focus-visible,#maincontent a:focus-visible{outline:3px solid #9dbdff;outline-offset:2px}
+#maincontent table{width:100%;border-collapse:separate;border-spacing:0}
+#maincontent th,#maincontent td{overflow-wrap:anywhere}
+#maincontent .table,#maincontent table.cbi-section-table{border-radius:12px;overflow:hidden}
+#maincontent .table thead th{background:#f5f7fb;color:#46516a}
+#maincontent .label,#maincontent .badge{border-radius:999px}
+#mainmenu .nav>li>a,#mainmenu .nav>li>a:hover,#mainmenu .nav>li.active>a,#mainmenu .nav>li.active>a:hover{border-radius:12px;margin:3px 6px;transition:background-color .15s ease}
+#mainmenu .nav>li.active>a,#mainmenu .nav>li.active>a:hover{background:#e6efff;color:#174b9e;text-shadow:none}
+header,#header{box-shadow:0 3px 18px rgba(29,47,84,.05)}
+@media(max-width:767px){#maincontent{padding-left:10px;padding-right:10px}#maincontent .cbi-map,#maincontent .cbi-section{padding:14px}#maincontent .table-responsive{border:0}#maincontent table{table-layout:auto}#maincontent .cbi-button,#maincontent .btn{max-width:100%;white-space:normal}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
