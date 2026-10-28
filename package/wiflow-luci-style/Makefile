@@ -24,9 +24,9 @@ endef
 define Package/wiflow-luci-style/install
 	$(INSTALL_DIR) $(1)/www/luci-static/resources
 	$(INSTALL_DATA) ./htdocs/wiflow.css $(1)/www/luci-static/resources/wiflow.css
-	$(INSTALL_DATA) ./htdocs/wiflow-favicon.png $(1)/www/luci-static/resources/wiflow-favicon.png
+	$(INSTALL_DATA) $(CURDIR)/../../assets/favicon-512.png $(1)/www/luci-static/resources/wiflow-favicon.png
 	$(INSTALL_DIR) $(1)/usr/share/wiflow
-	$(INSTALL_DATA) ./htdocs/wiflow-favicon.png $(1)/usr/share/wiflow/favicon.png
+	$(INSTALL_DATA) $(CURDIR)/../../assets/favicon-512.png $(1)/usr/share/wiflow/favicon.png
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./root/etc/uci-defaults/99-wiflow-style $(1)/etc/uci-defaults/99-wiflow-style
 endef
