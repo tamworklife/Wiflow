@@ -1,17 +1,15 @@
-# WiFlow NR3053
+# WiFlow · Viettel NR3053
 
-Workspace for reconstructing and maintaining the WiFlow firmware and custom LuCI interface for the Viettel NR3053.
+Workspace for the WiFlow firmware and custom LuCI interface for the Viettel NR3053.
 
-## Current status
+## Current progress
+- UI design prototype: `ui-prototype/` (visual-only, mock data).
+- LuCI style package source: `package/wiflow-luci-style/`.
+- Package builder: `tools/build-style-ipk.sh`.
 
-This repository is being initialized. The original firmware image and its extracted source files must be added and verified before firmware behavior can be modified safely.
+The style package adds a responsive CSS layer to supported existing LuCI templates and does not replace the router's wireless handlers. It is not the completed custom dashboard or Wi-Fi wizard.
 
-## Planned work
+## Firmware status
+A modified sysupgrade image has **not** yet been built or validated. The original SquashFS could not be extracted in the current environment because compatible extraction tools are unavailable and network resolution is blocked. Do not flash the prototype or style package as a firmware image.
 
-- Preserve the original LuCI Wi-Fi scan and connection flow.
-- Audit the custom theme and responsive layouts for desktop, tablet, and mobile.
-- Reproduce and test the firmware build environment before creating flashable images.
-
-## Important
-
-This repository does not yet contain a verified OpenWrt source tree or a reproducible firmware build. Do not treat this README or repository scaffold as firmware source or flashable output.
+See [implementation status](docs/IMPLEMENTATION_STATUS.md) for the exact blocker and the steps required to complete the firmware.
