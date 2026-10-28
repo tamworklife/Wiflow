@@ -7,8 +7,8 @@ STAGE=$(mktemp -d)
 trap 'rm -rf "$STAGE"' EXIT
 mkdir -p "$OUT" "$STAGE/control" "$STAGE/data/www/luci-static/resources" "$STAGE/data/usr/share/wiflow" "$STAGE/data/etc/uci-defaults"
 cp "$PKG/htdocs/wiflow.css" "$STAGE/data/www/luci-static/resources/wiflow.css"
-cp "$PKG/htdocs/wiflow-favicon.png" "$STAGE/data/www/luci-static/resources/wiflow-favicon.png"
-cp "$PKG/htdocs/wiflow-favicon.png" "$STAGE/data/usr/share/wiflow/favicon.png"
+cp "$ROOT/assets/favicon-512.png" "$STAGE/data/www/luci-static/resources/wiflow-favicon.png"
+cp "$ROOT/assets/favicon-512.png" "$STAGE/data/usr/share/wiflow/favicon.png"
 cp "$PKG/root/etc/uci-defaults/99-wiflow-style" "$STAGE/data/etc/uci-defaults/99-wiflow-style"
 chmod 755 "$STAGE/data/etc/uci-defaults/99-wiflow-style"
 cat > "$STAGE/control/control" <<'CONTROL'
