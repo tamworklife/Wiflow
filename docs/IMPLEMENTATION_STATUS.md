@@ -1,23 +1,25 @@
 # Firmware UI implementation status
 
 ## Confirmed target
+- Original image: `wiflow-os-1.4.0-viettel-nr3053-squashfs-sysupgrade.itb`
+- FIT metadata identifies ARM64 OpenWrt, target `viettel_nr3053`, Linux 6.12.94.
+- Root filesystem: SquashFS 4.0, XZ-compressed, 11,944,652 bytes, 1,693 inodes.
+- Desired UI: three primary sections (Tổng quan, WiFi, Hệ thống), responsive desktop/tablet/mobile layout, exact supplied WiFlow favicon, and a Wi-Fi flow that preserves the existing scan/join/save/apply operations.
 
-- Firmware supplied: `wiflow-os-1.4.0-viettel-nr3053-squashfs-sysupgrade.itb`
-- Target: Viettel NR3053 / WiFlow
-- UX target: three primary LuCI sections (Tổng quan, WiFi, Hệ thống), responsive desktop/tablet/mobile layout, WiFlow brand styling, rounded favicon with transparent outside corners.
-- Wi-Fi wizard must preserve every original LuCI operation and order. The first custom-styled step selects the existing MediaTek 2.4 GHz or 5 GHz radio for scanning; then show scan results, select SSID, enter password, continue, save, save & apply, and completion only where those correspond to the original LuCI flow.
+## Work added
+- `ui-prototype/` is a visual-only prototype and uses mock values; it is not router-connected.
+- `package/wiflow-luci-style/` adds a presentation-only stylesheet to supported existing LuCI Lua/ucode theme headers. It does not replace wireless handlers.
+- `tools/build-style-ipk.sh` packages that styling as an architecture-independent `.ipk`.
+- Package source was committed to the repository.
 
-## Safety gate before firmware changes
+## Blocker and verification
+- This container has no `unsquashfs`, `mksquashfs`, `7z`, or `bsdtar`; it has no usable loop device, and outbound DNS/network resolution fails. Mounting the SquashFS is denied by the container.
+- Therefore the actual LuCI handlers, template generation/version, MediaTek radio identifiers, and firmware image build rules have not been verified.
+- **No modified sysupgrade firmware has been built or validated.** The style `.ipk` is not a flashable firmware image.
 
-The repository still does not contain a verified OpenWrt build tree, package feed revisions, target patches, or the original LuCI handlers. The supplied ITB contains a SquashFS root filesystem, but this environment currently has no `unsquashfs`/SquashFS extraction utility and package installation is unavailable. The image's SquashFS payload has been located and copied for later extraction; it has not been modified.
-
-Do not create or label a modified image as flashable until:
-1. the rootfs and existing LuCI files are extracted and inspected;
-2. the current scan/connect/save/apply handlers and MediaTek radio identifiers are verified;
-3. the UI changes are applied without replacing backend behavior;
-4. responsive layout and the full wizard are tested;
-5. the image is rebuilt with the correct target toolchain and validated.
-
-## Prototype
-
-See `ui-prototype/`. It is visual-only, uses mock status/network values, and does not call router APIs. It is a design reference, not firmware code.
+## Required before a complete firmware can be produced
+1. Extract the root filesystem with a compatible SquashFS 4.0/XZ tool.
+2. Inspect the real LuCI templates and existing wireless scan/join/save/apply handlers.
+3. Integrate the three-section UI and radio-select-first scan wizard without changing backend operation order.
+4. Build with the matching OpenWrt source/build tree or target ImageBuilder, preserving the NR3053 FIT layout.
+5. Verify FIT structure, kernel/rootfs compatibility, image size, and recovery path before flashing.
